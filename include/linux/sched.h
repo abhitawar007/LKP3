@@ -52,7 +52,7 @@ struct sched_param {
 
 #ifdef	CONFIG_SCHED_LOTTERY_POLICY
 	unsigned int    lottery_id;
-	unsigned long long tickets;
+	unsigned long long numberOfTickets;
 #endif
 };
 
@@ -1234,7 +1234,7 @@ struct task_struct {
 
 #ifdef CONFIG_SCHED_LOTTERY_POLICY
 	unsigned int    lottery_id;
-	unsigned long long tickets;
+	unsigned long long numberOfTickets;
 #endif
 	volatile long state;	/* -1 unrunnable, 0 runnable, >0 stopped */
 	void *stack;
@@ -2653,8 +2653,8 @@ struct lottery_event_log{
 	unsigned long lines;
 	unsigned long cursor;
 };
-void init_lottery_event_log();
-struct lottery_event_log * get_lottery_event_log();
+void init_lottery_event_log(void);
+struct lottery_event_log * get_lottery_event_log(void);
 void register_lottery_event(unsigned long long t, char *m, int a);
 
 #endif

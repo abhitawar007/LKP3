@@ -522,13 +522,14 @@ static struct root_domain def_root_domain;
 
 #ifdef CONFIG_SCHED_LOTTERY_POLICY
 struct lottery_task {
-	struct list_head lottery_runnable_node;
-	unsigned long long tickets;
+	unsigned long long numberOfTickets;
+	unsigned long long prevJiffies;
 	struct list_head lottery_list_node;
+	struct list_head lottery_node;
 	struct task_struct *task;
 };
 struct lottery_rq {
-	struct list_head lottery_runnable_head;
+	struct list_head lottery_head;
 	struct list_head lottery_list_head;
 	atomic_t nr_running;
 };
@@ -1869,16 +1870,17 @@ static inline void __set_task_cpu(struct task_struct *p, unsigned int cpu)
 #include "sched_stats.h"
 #include "sched_idletask.c"
 #include "sched_fair.c"
-#include "sched_rt.c"
-#ifdef CONFIG_SCHED_DEBUG
-# include "sched_debug.c"
-#endif
+
 #ifdef	CONFIG_SCHED_LOTTERY_POLICY
 # include "sched_lottery.c"
 #endif
 
+#include "sched_rt.c"
+#ifdef CONFIG_SCHED_DEBUG
+# include "sched_debug.c"
+#endif
 #ifdef CONFIG_SCHED_LOTTERY_POLICY
-	#define sched_class_highest (&lottery_sched_class)
+	#define sched_class_highest (&rt_sched_class)
 #else
 	#define sched_class_highest (&rt_sched_class)
 #endif
@@ -6494,7 +6496,7 @@ recheck:
 	}
 #ifdef CONFIG_SCHED_LOTTERY_POLICY
 	if(policy==SCHED_LOTTERY){
-		p->tickets = param->tickets;
+		p->numberOfTickets = param->numberOfTickets;
 		p->lottery_id = param->lottery_id;
 	}
 #endif
